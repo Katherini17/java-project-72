@@ -2,8 +2,6 @@
 .gradle/
 
 **/build/
-!gradle-wrapper.jar
-!gradle-wrapper.properties
 
 # Cache of project
 .gradletasknamecache
@@ -14,7 +12,7 @@
 # Log file
 *.log
 
-# Package Files
+# Package Files — игнорируем все архивы и jar
 *.jar
 *.war
 *.nar
@@ -23,9 +21,18 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Отменяем игнорирование gradle wrapper (важно — после *.jar)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# virtual machine crash logs
 hs_err_pid*
 replay_pid*
 
 # IntelliJ IDEA
 .idea
+
+# JTE
+jte-output/
+jte-classes/
+build/jte/
