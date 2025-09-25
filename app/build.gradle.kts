@@ -4,6 +4,7 @@ plugins {
     jacoco
     id("com.github.ben-manes.versions") version "0.53.0"
     id("org.sonarqube") version "6.3.1.5724"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "hexlet.code"
