@@ -42,12 +42,10 @@ tasks.jacocoTestReport {
 
 jacoco {
     toolVersion = "0.8.13"
-    reportsDirectory = layout.buildDirectory.dir("customJacocoReportDir")
 }
 
 tasks.jacocoTestReport {
     reports {
         xml.required = true
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
     }
 }
