@@ -2,6 +2,7 @@ plugins {
     application
     checkstyle
     id("com.github.ben-manes.versions") version "0.53.0"
+    id("org.sonarqube") version "6.3.1.5724"
 }
 
 group = "hexlet.code"
@@ -22,4 +23,11 @@ tasks.test {
 
 application {
     mainClass.set("hexlet.code.App")
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "Katherini17_java-project-72")
+        property("sonar.organization", "katherini-17-projects")
+    }
 }
