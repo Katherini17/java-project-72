@@ -3,6 +3,8 @@ package hexlet.code;
 import io.javalin.Javalin;
 
 public class App {
+    private static final String DEFAULT_PORT = "7070";
+
     public static void main(String[] args) {
         Javalin app = getApp();
 
@@ -10,7 +12,7 @@ public class App {
             ctx.result("Hello World!");
         });
 
-        app.start(7070);
+        app.start(getPort());
     }
 
     public static Javalin getApp() {
@@ -19,5 +21,10 @@ public class App {
         });
 
         return app;
+    }
+
+    public static int getPort() {
+        String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
+        return Integer.parseInt(port);
     }
 }
