@@ -6,12 +6,14 @@ run-dist:
 
 clean:
 	./gradlew clean
+run:
+	./gradlew run
 
 build:
-	./gradlew build
+	./gradlew clean build
 
 test:
-	./gradlew test
+	./gradlew clean test
 
 lint-main:
 	./gradlew checkstyleMain

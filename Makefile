@@ -7,6 +7,9 @@ run-dist:
 clean:
 	make -C app clean
 
+run:
+	make -C app run
+
 build:
 	make -C app build
 
