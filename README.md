@@ -9,7 +9,6 @@
 
 ### Coverage:
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Katherini17_java-project-72&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Katherini17_java-project-72)
-
 ### Code smell:
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Katherini17_java-project-72&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Katherini17_java-project-72)
 
