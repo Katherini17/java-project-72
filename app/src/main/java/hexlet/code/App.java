@@ -4,6 +4,9 @@ import io.javalin.Javalin;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import hexlet.code.repository.BaseRepository;
+
+
 public class App {
     private static final String DEFAULT_PORT = "7070";
     private static final String DEFAULT_DATABASE_URL = "jdbc:h2:mem:my_app";
