@@ -30,6 +30,8 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.42")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
+
+    implementation("gg.jte:jte:3.2.1")
 }
 
 tasks.test {
