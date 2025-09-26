@@ -23,7 +23,7 @@ dependencies {
     implementation("io.javalin:javalin-rendering:6.7.0")
 
     implementation("com.zaxxer:HikariCP:7.0.2")
-    testImplementation("com.h2database:h2:2.3.232")
+    implementation("com.h2database:h2:2.4.240")
 
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")

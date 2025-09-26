@@ -20,7 +20,7 @@ public class App {
         Javalin app = getApp();
 
         app.get("/", ctx -> {
-            ctx.result("Hello World!");
+            ctx.render("index.jte");
         });
 
         app.start(getPort());
