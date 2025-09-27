@@ -1,5 +1,8 @@
 package hexlet.code;
 
+import hexlet.code.controller.RootController;
+import hexlet.code.controller.UrlsController;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 
@@ -19,9 +22,8 @@ public class App {
     public static void main(String[] args) {
         Javalin app = getApp();
 
-        app.get("/", ctx -> {
-            ctx.render("index.jte");
-        });
+        app.get(NamedRoutes.rootPath(), RootController::root);
+        app.post(NamedRoutes.urlsPath(), UrlsController::create);
 
         app.start(getPort());
     }
