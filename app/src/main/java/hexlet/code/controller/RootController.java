@@ -8,7 +8,8 @@ public class RootController {
 
     public static void root(Context ctx) {
         BasePage page = new BasePage();
-        page.setTitle("Анализатор страниц");
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
         ctx.render("index.jte", model("page", page));
     }
 
