@@ -2,6 +2,7 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.repository.UrlsRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.validation.ValidationException;
@@ -30,15 +31,18 @@ public class UrlsController {
         try {
             String fullUrlStr = ctx.formParamAsClass("name", String.class)
                     .check(value -> value != null && !value.trim().isEmpty(), INVALID_URL_FLASH_MESSAGE)
-                    .get();
+                    .get()
+                    .trim()
+                    .toLowerCase();
             URL fullUrl = URI.create(fullUrlStr).toURL();
             String normalizedUrlStr = getNormalizedUrl(fullUrl);
 
-            if (UrlsRepository.find(normalizedUrlStr)) {
+            if (UrlsRepository.existsByName(normalizedUrlStr)) {
                 ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, EXISTING_URL_FLASH_MESSAGE);
                 ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ALERT_FLASH_TYPE);
 
                 ctx.redirect(NamedRoutes.rootPath());
+                return;
             }
 
             Url url = new Url(normalizedUrlStr, Instant.now());
@@ -50,10 +54,11 @@ public class UrlsController {
             UrlsPage page = new UrlsPage(UrlsRepository.getEntities());
             ctx.render("urls.jte", model("page", page));
 
-        } catch (MalformedURLException | ValidationException error) {
+        } catch (MalformedURLException | ValidationException | IllegalArgumentException error) {
             ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, INVALID_URL_FLASH_MESSAGE);
             ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
 
+            System.out.println("Ошибка в catch " + error.getMessage());
             ctx.redirect(NamedRoutes.rootPath());
         }
     }
