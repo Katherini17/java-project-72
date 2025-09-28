@@ -2,17 +2,21 @@ package hexlet.code.repository;
 
 import hexlet.code.model.Url;
 
+import lombok.extern.slf4j.Slf4j;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Instant;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class UrlsRepository extends BaseRepository {
     public static void save(Url url) throws SQLException {
+        log.info("Attempting to save URL: {}", url.getName());
+
         String sql = """
                 INSERT INTO urls (name, created_at)
                 VALUES (?, ?)
@@ -22,20 +26,24 @@ public class UrlsRepository extends BaseRepository {
                      Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, url.getName());
-            preparedStatement.setObject(2, url.getCreatedAt());
+            preparedStatement.setTimestamp(2, url.getCreatedAt());
             preparedStatement.executeUpdate();
 
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 Long id = generatedKeys.getLong(1);
                 url.setId(id);
+
+                log.info("URL saved successfully with ID: {}", id);
             } else {
+                log.error("Database did not return an ID after saving URL: {}", url.getName());
                 throw new SQLException("DataBase have not returned an id after saving an entity");
             }
         }
     }
 
     public static List<Url> getEntities() throws SQLException {
+        log.info("Attempting to retrieve list of URLs");
         String sql = "SELECT * FROM urls";
 
         try (Connection connection = getDataSource().getConnection();
@@ -47,7 +55,7 @@ public class UrlsRepository extends BaseRepository {
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String name = resultSet.getString("name");
-                Instant createdAt = resultSet.getTimestamp("created_at").toInstant();
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
 
                 Url url = new Url(name, createdAt);
                 url.setId(id);
@@ -55,12 +63,14 @@ public class UrlsRepository extends BaseRepository {
                 urls.add(url);
             }
 
+            log.info("Retrieved {} URLs successfully", urls.size());
             return urls;
         }
 
     }
 
     public static boolean existsByName(String name) throws SQLException {
+        log.debug("Checking if URL exists: {}", name);
         String sql = """
                     SELECT EXISTS(
                         SELECT 1
@@ -76,7 +86,9 @@ public class UrlsRepository extends BaseRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                return resultSet.getBoolean(1);
+                boolean exists = resultSet.getBoolean(1);
+                log.debug("URL '{}' exists: {}", name, exists);
+                return exists;
             }
         }
 

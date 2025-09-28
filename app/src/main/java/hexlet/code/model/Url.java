@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 
 @NoArgsConstructor
@@ -17,9 +18,9 @@ public class Url {
     @ToString.Include
     private String name;
 
-    private Instant createdAt;
+    private Timestamp createdAt;
 
-    public Url(String name, Instant createdAt) {
+    public Url(String name, Timestamp createdAt) {
         this.name = name;
         this.createdAt = createdAt;
     }
