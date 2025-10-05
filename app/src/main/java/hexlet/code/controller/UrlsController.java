@@ -60,7 +60,7 @@ public class UrlsController {
             ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_ADDED_URL_FLASH_MESSAGE);
             ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
 
-;            ctx.redirect(NamedRoutes.urlsPath());
+            ctx.redirect(NamedRoutes.urlsPath());
 
         } catch (MalformedURLException | ValidationException | IllegalArgumentException error) {
             log.error("Failed to create URL: {}", error.getMessage(), error);
@@ -68,7 +68,6 @@ public class UrlsController {
             ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, INVALID_URL_FLASH_MESSAGE);
             ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
 
-            ctx.status(401);
             ctx.redirect(NamedRoutes.rootPath());
         }
     }

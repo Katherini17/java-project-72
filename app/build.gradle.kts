@@ -17,9 +17,11 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("org.jsoup:jsoup:1.21.2")
 
     implementation ("io.javalin:javalin:6.7.0")
     implementation("io.javalin:javalin-rendering:6.7.0")
+    implementation("io.javalin:javalin-testtools:6.7.0")
     implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("org.codehaus.janino:janino:3.1.12")

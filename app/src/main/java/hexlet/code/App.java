@@ -42,13 +42,17 @@ public class App {
         app.get(NamedRoutes.urlsPath(), UrlsController::index);
 
         app.start(getPort());
-        log.info("Application started with APP_ENV: {}, port: {}, database: {}", getAppEnv(), getPort(), getDatabaseUrl());
+        log.info("Application started with APP_ENV: {}, port: {}", getAppEnv(), getPort());
     }
 
-    public static Javalin getApp() throws IOException, SQLException {
+    public static Javalin getApp() throws SQLException, IOException {
+        return getApp(false);
+    }
+    public static Javalin getApp(boolean isTest) throws IOException, SQLException {
         log.info("Configuring database connection");
         HikariConfig hikariConfig =  new HikariConfig();
-        hikariConfig.setJdbcUrl(getDatabaseUrl());
+        String databaseUrl = isTest ? DEFAULT_DATABASE_URL : getDatabaseUrl();
+        hikariConfig.setJdbcUrl(databaseUrl);
 
         HikariDataSource dataSource = new HikariDataSource(hikariConfig);
         initializeDatabase(dataSource);

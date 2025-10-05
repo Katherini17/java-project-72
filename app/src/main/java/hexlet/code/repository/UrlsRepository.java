@@ -94,4 +94,15 @@ public class UrlsRepository extends BaseRepository {
 
         return false;
     }
+
+    public static void removeAll() throws SQLException {
+        String sql = "TRUNCATE TABLE urls";
+
+        try (Connection connection = getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.executeUpdate();
+            log.info("Remove all URLs from table urls");
+        }
+    }
 }
