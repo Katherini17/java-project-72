@@ -12,10 +12,10 @@ content = @`
 
             <thead>
                 <tr>
-                    <th class="bg-dark text-light">ID</th>
-                    <th class="bg-dark text-light">URL</th>
-                    <th class="bg-dark text-light">Последняя проверка</th>
-                    <th class="bg-dark text-light">Код ответа</th>
+                    <th class="bg-secondary text-light">ID</th>
+                    <th class="bg-secondary text-light">URL</th>
+                    <th class="bg-secondary text-light">Последняя проверка</th>
+                    <th class="bg-secondary text-light">Код ответа</th>
                 </tr>
             </thead>
 
