@@ -13,71 +13,104 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Анализатор страниц</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        /* Стили для реализации "липкого футера" без фиксации футера */
+        html, body {
+            height: 100%; /* Важно для flexbox на body */
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column; /* Элементы body будут располагаться вертикально */
+        }
+        main {
+            flex-grow: 1; /* main займет все доступное пространство между header и footer */
+            /* Дополнительные стили для main, если нужны отступы */
+            /* padding-top: 20px; */ /* Эти отступы теперь лучше задавать внутри контейнеров, если они есть */
+            /* padding-bottom: 20px; */
+        }
+        /* Убираем отступы по умолчанию у div внутри main, если они мешают */
+        /* main > div {
+            flex-grow: 1;
+        } */
+
+        /* Дополнительные стили для отступов, если main не имеет container */
+        .main-content-wrapper {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+    </style>
 </head>
-<body class="d-flex flex-column min-vh-100">
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="${NamedRoutes.rootPath()}">Анализатор страниц</a>  <!-- Бренд слева -->
+<body class="bg-light">
+<header class="sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="${NamedRoutes.rootPath()}">Анализатор страниц</a>
 
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="${NamedRoutes.rootPath()}">Главная</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/urls">Сайты</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <main class="flex-grow-1">
-            <div class="bg-light">
-                @if(page != null && page.getFlash() != null)
-                    @if(page.getFlashType() == "success")
-                    <div class="alert alert-success" role="alert">
-                        ${page.getFlash()}
-                    </div>
-                    @elseif(page.getFlashType() == "error")
-                    <div class="alert alert-danger" role="alert">
-                        ${page.getFlash()}
-                    </div>
-                    @elseif(page.getFlashType() == "warning")
-                    <div class="alert alert-warning" role="alert">
-                        ${page.getFlash()}
-                    </div>
-                    @else
-                    <div class="alert alert-info" role="alert">
-                        ${page.getFlash()}
-                    </div>
-                    @endif
-                @endif
-                ${content}
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="${NamedRoutes.rootPath()}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/urls">Сайты</a>
+                    </li>
+                </ul>
             </div>
-        </main>
+        </div>
+    </nav>
+</header>
 
-        <footer class="text-center mt-auto text-light bg-dark py-3">
-            <div class="container">
-                <div class="d-flex flex-column gap-2 flex-md-row justify-content-center align-items-center small">
-                    <span>© ${java.time.Year.now().getValue()} <strong>Екатерина Авдеенко</strong></span>
-                    <span class="d-none d-md-inline">|</span>
-                    <span class="text-break">Анализатор страниц -
-                    <span class="d-block d-md-inline">учебный проект на <a href="https://ru.hexlet.io/" target="_blank" class="link-light link-underline-opacity-0">Hexlet</a></span>
-                </span>
-                    <span class="d-none d-md-inline">|</span>
-                    <span><a href="https://github.com/Katherini17/java-project-72" target="_blank" class="link-light link-underline-opacity-0">GitHub</a></span>
-                    <span class="d-none d-md-inline">|</span>
-                    <span class="d-block d-md-inline">Katherini17@yandex.ru</span>
-                </div>
-            </div>
-        </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<!-- Алерты теперь вне main, чтобы они могли быть во всю ширину -->
+@if(page != null && page.getFlash() != null)
+<div class="container-fluid px-0"> <!-- container-fluid для полной ширины, px-0 убирает padding по бокам -->
+    @if(page.getFlashType() == "success")
+    <div class="alert alert-success rounded-0 mb-0" role="alert"> <!-- rounded-0 убирает скругление углов, mb-0 убирает нижний margin -->
+        ${page.getFlash()}
+    </div>
+    @elseif(page.getFlashType() == "error")
+    <div class="alert alert-danger rounded-0 mb-0" role="alert">
+        ${page.getFlash()}
+    </div>
+    @elseif(page.getFlashType() == "warning")
+    <div class="alert alert-warning rounded-0 mb-0" role="alert">
+        ${page.getFlash()}
+    </div>
+    @else
+    <div class="alert alert-info rounded-0 mb-0" role="alert">
+        ${page.getFlash()}
+    </div>
+    @endif
+</div>
+@endif
+
+<!-- main теперь без класса container, чтобы его содержимое было во всю ширину -->
+<main>
+    <!-- Добавим обертку для контента, чтобы задать внутренние отступы, если они нужны -->
+    <div class="container-fluid main-content-wrapper">
+        ${content}
+    </div>
+</main>
+
+<footer class="text-center text-light bg-dark py-3 mt-auto">
+    <div class="container-fluid">
+        <div class="d-flex flex-column gap-2 flex-md-row justify-content-center align-items-center small">
+            <span>© ${java.time.Year.now().getValue()} <strong>Екатерина Авдеенко</strong></span>
+            <span class="d-none d-md-inline">|</span>
+            <span class="text-break">Анализатор страниц -
+                <span class="d-block d-md-inline">учебный проект на <a href="https://ru.hexlet.io/" target="_blank" class="link-light link-underline-opacity-0">Hexlet</a></span>
+            </span>
+            <span class="d-none d-md-inline">|</span>
+            <span><a href="https://github.com/Katherini17/java-project-72" target="_blank" class="link-light">GitHub</a></span>
+            <span class="d-none d-md-inline">|</span>
+            <span class="d-block d-md-inline">Katherini17@yandex.ru</span>
+        </div>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
-
