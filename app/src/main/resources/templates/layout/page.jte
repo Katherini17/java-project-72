@@ -13,35 +13,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Анализатор страниц</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <style>
-        /* Стили для реализации "липкого футера" без фиксации футера */
-        html, body {
-            height: 100%; /* Важно для flexbox на body */
-            margin: 0;
-        }
-        body {
-            display: flex;
-            flex-direction: column; /* Элементы body будут располагаться вертикально */
-        }
-        main {
-            flex-grow: 1; /* main займет все доступное пространство между header и footer */
-            /* Дополнительные стили для main, если нужны отступы */
-            /* padding-top: 20px; */ /* Эти отступы теперь лучше задавать внутри контейнеров, если они есть */
-            /* padding-bottom: 20px; */
-        }
-        /* Убираем отступы по умолчанию у div внутри main, если они мешают */
-        /* main > div {
-            flex-grow: 1;
-        } */
-
-        /* Дополнительные стили для отступов, если main не имеет container */
-        .main-content-wrapper {
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-    </style>
+    <!-- Ваши кастомные стили удалены -->
 </head>
-<body class="bg-light">
+<body class="d-flex flex-column min-vh-100 bg-light">
 <header class="sticky-top">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -65,33 +39,34 @@
     </nav>
 </header>
 
-<!-- Алерты теперь вне main, чтобы они могли быть во всю ширину -->
 @if(page != null && page.getFlash() != null)
-<div class="container-fluid px-0"> <!-- container-fluid для полной ширины, px-0 убирает padding по бокам -->
+<div class="container-fluid px-0">
     @if(page.getFlashType() == "success")
-    <div class="alert alert-success rounded-0 mb-0" role="alert"> <!-- rounded-0 убирает скругление углов, mb-0 убирает нижний margin -->
+    <div class="alert alert-success rounded-0 mb-0 alert-dismissible" role="alert">
         ${page.getFlash()}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @elseif(page.getFlashType() == "error")
-    <div class="alert alert-danger rounded-0 mb-0" role="alert">
+    <div class="alert alert-danger rounded-0 mb-0 alert-dismissible" role="alert">
         ${page.getFlash()}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @elseif(page.getFlashType() == "warning")
-    <div class="alert alert-warning rounded-0 mb-0" role="alert">
+    <div class="alert alert-warning rounded-0 mb-0 alert-dismissible" role="alert">
         ${page.getFlash()}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @else
-    <div class="alert alert-info rounded-0 mb-0" role="alert">
+    <div class="alert alert-info rounded-0 mb-0 alert-dismissible" role="alert">
         ${page.getFlash()}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 </div>
 @endif
 
-<!-- main теперь без класса container, чтобы его содержимое было во всю ширину -->
-<main>
-    <!-- Добавим обертку для контента, чтобы задать внутренние отступы, если они нужны -->
-    <div class="container-fluid main-content-wrapper">
+<main class="flex-grow-1">
+    <div class="container-fluid py-4">
         ${content}
     </div>
 </main>

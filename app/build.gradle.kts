@@ -37,7 +37,7 @@ dependencies {
 
     implementation("gg.jte:jte:3.2.1")
 
-    implementation("com.konghq:unirest-java:4.5.1")
+    implementation("com.konghq:unirest-java:3.14.5")
 }
 
 tasks.test {
@@ -56,10 +56,10 @@ sonar {
 }
 
 tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
 }
 tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
+    dependsOn(tasks.test)
 }
 
 jacoco {
