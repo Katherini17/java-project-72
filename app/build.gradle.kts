@@ -36,6 +36,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 
     implementation("gg.jte:jte:3.2.1")
+
+    implementation("com.konghq:unirest-java:4.5.1")
 }
 
 tasks.test {
