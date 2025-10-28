@@ -1,10 +1,12 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.UrlsPage;
+import hexlet.code.dto.urls.UrlPage;
+import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlsRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
 import io.javalin.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,8 +83,17 @@ public class UrlsController {
         page.setFlash(flash);
         page.setFlashType(flashType);
 
-        ctx.render("urls/urls.jte", model("page", page));
+        ctx.render("urls/index.jte", model("page", page));
         log.debug("URLs page rendered with {} URLs and flash: {}", page.getUrls().size(), flash);
+    }
+
+    public static void show(Context ctx) throws SQLException {
+        Long id = ctx.pathParamAsClass("id", Long.class).get();
+        Url url = UrlsRepository.find(id)
+                .orElseThrow(() -> new NotFoundResponse("Url not found"));
+        UrlPage page = new UrlPage(url);
+
+        ctx.render("urls/show.jte", model("page", page));
     }
 
     public static String getNormalizedUrl(URL url) {

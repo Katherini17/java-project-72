@@ -13,7 +13,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Анализатор страниц</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <!-- Ваши кастомные стили удалены -->
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 <header class="sticky-top">
@@ -66,7 +65,7 @@
 @endif
 
 <main class="flex-grow-1">
-    <div class="container-fluid py-4">
+    <div class="container-lg h-100 w-100 d-flex flex-column align-items-center justify-content-center">
         ${content}
     </div>
 </main>

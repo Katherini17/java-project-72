@@ -12,4 +12,11 @@ public class NamedRoutes {
         return URLS_PATH;
     }
 
+    public static String urlPath(String id) {
+        return String.format("%s/%s", URLS_PATH, id);
+    }
+
+    public static String urlPath(Long id) {
+        return urlPath(String.valueOf(id));
+    }
 }

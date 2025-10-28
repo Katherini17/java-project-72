@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class UrlsRepository extends BaseRepository {
@@ -93,6 +94,32 @@ public class UrlsRepository extends BaseRepository {
         }
 
         return false;
+    }
+
+    public static Optional<Url> find(long id) throws SQLException {
+        log.info("Attempting to find URL with id: {}", id);
+        String sql = "SELECT * FROM urls WHERE id = ?";
+
+        try(Connection connection = getDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String name = resultSet.getString("name");
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
+
+                Url url = new Url(name, createdAt);
+                url.setId(id);
+
+                return Optional.of(url);
+            } else {
+                log.info("No URL found with id: {}", id);
+            }
+        }
+
+        return Optional.empty();
     }
 
     public static void removeAll() throws SQLException {
