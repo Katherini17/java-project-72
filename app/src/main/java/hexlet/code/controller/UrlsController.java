@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlsRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -89,11 +91,28 @@ public class UrlsController {
 
     public static void show(Context ctx) throws SQLException {
         Long id = ctx.pathParamAsClass("id", Long.class).get();
+
         Url url = UrlsRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Url not found"));
-        UrlPage page = new UrlPage(url);
+        List<UrlCheck> urlChekcs = UrlChecksRepository.findChecksByUrlId(id);
+
+        UrlPage page = new UrlPage(url, urlChekcs);
 
         ctx.render("urls/show.jte", model("page", page));
+    }
+
+    public static void check(Context ctx) throws SQLException {
+        log.info("Attempting to check URL from request");
+
+        Long id = ctx.pathParamAsClass("id", Long.class).get();
+        Url url = UrlsRepository.find(id)
+                .orElseThrow(() -> new NotFoundResponse("Url not found"));
+
+        try {
+
+        } catch (Exception e) {
+
+        }
     }
 
     public static String getNormalizedUrl(URL url) {
@@ -103,4 +122,5 @@ public class UrlsController {
 
         return String.format("%s://%s%s", protocol, host, port);
     }
+
 }

@@ -19,4 +19,12 @@ public class NamedRoutes {
     public static String urlPath(Long id) {
         return urlPath(String.valueOf(id));
     }
+
+    public static String urlCheckPath(String id) {
+        return String.format("%s/check", urlPath(id));
+    }
+
+    public static String getUrlsPath(Long id) {
+        return urlCheckPath(String.valueOf(id));
+    }
 }

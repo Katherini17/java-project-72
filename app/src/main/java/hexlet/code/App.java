@@ -41,6 +41,7 @@ public class App {
         app.post(NamedRoutes.urlsPath(), UrlsController::create);
         app.get(NamedRoutes.urlsPath(), UrlsController::index);
         app.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
+        app.post(NamedRoutes.urlCheckPath("{id}"), UrlsController::check);
 
         app.start(getPort());
         log.info("Application started with APP_ENV: {}, port: {}", getAppEnv(), getPort());
