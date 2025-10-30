@@ -54,9 +54,9 @@ public class UrlChecksRepository extends BaseRepository {
         String sql = """
             SELECT *
             FROM url_checks
-            WHERE urlId = ?
+            WHERE url_id = ?
             ORDER BY id DESC
-        """;
+            """;
 
         try (Connection connection = getDataSource().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -66,7 +66,10 @@ public class UrlChecksRepository extends BaseRepository {
 
             List<UrlCheck> urlChecks = new ArrayList<>();
             while (resultSet.next()) {
-                UrlCheck urlCheck = new UrlCheck(urlId, resultSet.getTimestamp("createdAt"));
+                Long checkId = resultSet.getLong("id");
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
+                UrlCheck urlCheck = new UrlCheck(urlId, createdAt);
+                urlCheck.setId(checkId);
                 urlChecks.add(urlCheck);
             }
 

@@ -100,7 +100,7 @@ public class UrlsRepository extends BaseRepository {
         log.info("Attempting to find URL with id: {}", id);
         String sql = "SELECT * FROM urls WHERE id = ?";
 
-        try(Connection connection = getDataSource().getConnection();
+        try (Connection connection = getDataSource().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setLong(1, id);

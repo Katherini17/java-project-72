@@ -1,12 +1,14 @@
 @import hexlet.code.model.Url
+@import hexlet.code.model.UrlCheck
 @import hexlet.code.util.NamedRoutes
+@import java.time.format.DateTimeFormatter
 @import hexlet.code.dto.urls.UrlPage
 @param UrlPage page
 
 @template.layout.page(
 page = page,
 content = @`
-    <section class="w-100">
+    <section class="w-100 mt-3">
             <h1>${page.getUrl().getName()}</h1>
             <ul  class="text-secondary list-unstyled">
                 <li>
@@ -14,8 +16,8 @@ content = @`
                     <span> ${
                             page.getUrl()
                                 .getCreatedAt()
-                                .toString()
-                                .substring(0, 10)
+                                .toLocalDateTime()
+                                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
                         }</span>
                 </li>
                 <li>ID: ${page.getUrl().getId()}</li>
@@ -23,7 +25,7 @@ content = @`
     </section>
     <section class="w-100">
         <div>
-            <form action="${NamedRoutes.urlPath(page.getUrl().getId())}" method="post">
+            <form action="${NamedRoutes.urlCheckPath(page.getUrl().getId())}" method="post">
                 <button type="submit" class="btn btn-primary">Запустить проверку</button>
             </form>
             <h2>Результаты проверок:</h2>
@@ -45,16 +47,21 @@ content = @`
                 </thead>
 
                 <tbody>
-                @for(Url urlCheck : page.getUrlChecks())
+                @for(UrlCheck urlCheck : page.getUrlChecks())
                     <tr>
                         <td class="bg-light">${urlCheck.getId()}</td>
                         <td class="bg-light">Код ответа</td>
                         <td class="bg-light">title</td>
                         <td class="bg-light">h1</td>
                         <td class="bg-light">description</td>
-                        <td class="bg-light">${urlCheck.getCreatedAt()}</td>
+                        <td class="bg-light">${
+                            urlCheck.getCreatedAt()
+                                .toLocalDateTime()
+                                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
+                            }
+                        </td>
                     </tr>
-                @endfor-->
+                @endfor
                 </tbody>
             </table>
         </div>

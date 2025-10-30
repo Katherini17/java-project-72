@@ -21,10 +21,10 @@ public class NamedRoutes {
     }
 
     public static String urlCheckPath(String id) {
-        return String.format("%s/check", urlPath(id));
+        return String.format("%s/checks", urlPath(id));
     }
 
-    public static String getUrlsPath(Long id) {
+    public static String urlCheckPath(Long id) {
         return urlCheckPath(String.valueOf(id));
     }
 }
