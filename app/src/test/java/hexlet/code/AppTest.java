@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 import static hexlet.code.App.getApp;
 import static hexlet.code.App.setupAppEnviroment;
@@ -43,7 +44,6 @@ public class AppTest {
     public void testMainPage() {
         JavalinTest.test(app, (server, client) -> {
             Response response = client.get(NamedRoutes.rootPath());
-            log.debug("!!!! код ответа = " + response.code());
             assertEquals(200, response.code());
         });
     }
@@ -63,7 +63,7 @@ public class AppTest {
             String normalizedUrl = "https://ru.hexlet.io";
             Response response = client.post(NamedRoutes.urlsPath(), requestBody);
             Document document = Jsoup.parse(response.body().string());
-            Elements links = document.select(String.format("a[href^='%s']", normalizedUrl));
+            Elements links = document.select(String.format("a:matchesOwn(%s)", Pattern.quote(normalizedUrl)));
 
             assertTrue(links.text().contains(normalizedUrl));
             assertTrue(UrlsRepository.existsByName(normalizedUrl));
