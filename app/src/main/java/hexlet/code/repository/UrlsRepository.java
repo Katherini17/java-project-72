@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,24 +17,28 @@ import java.util.Optional;
 @Slf4j
 public class UrlsRepository extends BaseRepository {
     public static void save(Url url) throws SQLException {
-        log.info("Attempting to save URL: {}", url.getName());
+        String urlName = url.getName();
+        Timestamp createdAt = Timestamp.from(Instant.now());
+
+        log.info("Attempting to save URL: {}", urlName);
 
         String sql = """
                 INSERT INTO urls (name, created_at)
                 VALUES (?, ?)
                 """;
         try (Connection connection = getDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql,
-                     Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            preparedStatement.setString(1, url.getName());
-            preparedStatement.setTimestamp(2, url.getCreatedAt());
+            preparedStatement.setString(1, urlName);
+            preparedStatement.setTimestamp(2, createdAt);
+
             preparedStatement.executeUpdate();
-
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+
             if (generatedKeys.next()) {
-                Long id = generatedKeys.getLong(1);
+                Long id = generatedKeys.getLong("id");
                 url.setId(id);
+                url.setCreatedAt(createdAt);
 
                 log.info("URL saved successfully with ID: {}", id);
             } else {
@@ -58,9 +63,9 @@ public class UrlsRepository extends BaseRepository {
                 String name = resultSet.getString("name");
                 Timestamp createdAt = resultSet.getTimestamp("created_at");
 
-                Url url = new Url(name, createdAt);
+                Url url = new Url(name);
                 url.setId(id);
-
+                url.setCreatedAt(createdAt);
                 urls.add(url);
             }
 
@@ -110,8 +115,9 @@ public class UrlsRepository extends BaseRepository {
                 String name = resultSet.getString("name");
                 Timestamp createdAt = resultSet.getTimestamp("created_at");
 
-                Url url = new Url(name, createdAt);
+                Url url = new Url(name);
                 url.setId(id);
+                url.setCreatedAt(createdAt);
 
                 return Optional.of(url);
             } else {
@@ -123,13 +129,15 @@ public class UrlsRepository extends BaseRepository {
     }
 
     public static void removeAll() throws SQLException {
-        String sql = "DELETE FROM urls";
+        String sql = "DELETE from urls";
 
         try (Connection connection = getDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             Statement statement = connection.createStatement()) {
 
-            preparedStatement.executeUpdate();
+            statement.executeUpdate(sql);
             log.info("Remove all URLs from table urls");
+        } catch (SQLException e) {
+            log.error("Failed to delete urls from table urls: {}", e.getMessage(), e);
         }
     }
 }

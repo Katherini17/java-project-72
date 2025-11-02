@@ -109,9 +109,10 @@ public class App {
 
             String sql = readResourceFile("schema.sql");
             statement.execute(sql);
+
             log.info("Database initialized");
-        } catch (URISyntaxException error) {
-            log.error("Failed to read schema.sql due to invalid URI: {}", error.getMessage(), error);
+        } catch (URISyntaxException e) {
+            log.error("Failed to read schema.sql due to invalid URI: {}", e.getMessage(), e);
         }
     }
 }

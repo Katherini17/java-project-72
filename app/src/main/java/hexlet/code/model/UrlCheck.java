@@ -22,10 +22,7 @@ public class UrlCheck {
 
     private Timestamp createdAt;
 
-    public UrlCheck(Long urlId, Timestamp createdAt) {
+    public UrlCheck(Long urlId) {
         this.urlId = urlId;
-        this.createdAt = createdAt;
     }
-
-
 }
