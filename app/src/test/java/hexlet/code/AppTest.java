@@ -184,13 +184,17 @@ public class AppTest {
 
                 Elements rows = document.select("tr");
 
-                Elements tds1 = rows.selectFirst(String.format("tr:has(td:first-child:matchesOwn(^%d$))", urlCheck1.getId()))
+                Elements tds1 = rows.selectFirst(
+                        String.format("tr:has(td:first-child:matchesOwn(^%d$))", urlCheck1.getId())
+                        )
                         .select("td");
 
                 assertEquals(String.valueOf(urlCheck1.getId()), tds1.get(0).text());
                 assertEquals(urlCheck1CreatedAt, tds1.get(5).text());
 
-                Elements tds2 = rows.selectFirst(String.format("tr:has(td:first-child:matchesOwn(^%d$))", urlCheck2.getId()))
+                Elements tds2 = rows.selectFirst(
+                        String.format("tr:has(td:first-child:matchesOwn(^%d$))", urlCheck2.getId())
+                        )
                         .select("td");
 
                 assertEquals(String.valueOf(urlCheck2.getId()), tds2.get(0).text());
@@ -216,7 +220,9 @@ public class AppTest {
                 UrlCheck urlCheck = UrlChecksRepository.findChecksByUrlId(1L).getLast();
 
                 Document document = Jsoup.parse(response.body().string());
-                Elements rows = document.select(String.format("tr:has(td:first-child:matchesOwn(^%d$))", urlCheck.getId()));
+                Elements rows = document.select(
+                        String.format("tr:has(td:first-child:matchesOwn(^%d$))", urlCheck.getId())
+                );
 
                 Elements tds = rows.getFirst().select("td");
 
