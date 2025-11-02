@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 public class UrlChecksRepository extends BaseRepository {
     public static void save(UrlCheck urlCheck) throws SQLException {
         Long urlId = urlCheck.getUrlId();
-        Timestamp urlCheckCreatedAt = urlCheck.getCreatedAt();
-        log.info("Attempting to save URL check with url ID: {}, created at: {}", urlId, urlCheckCreatedAt);
+        Timestamp createdAt = Timestamp.from(Instant.now());
+
+        log.info("Attempting to save URL check with url ID: {}", urlId);
 
         String sql = """
-                INSERT INTO url_checks (status_code, title, h1, description, url_id)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO url_checks (status_code, title, h1, description, url_id, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection connection = getDataSource().getConnection();
@@ -33,18 +35,19 @@ public class UrlChecksRepository extends BaseRepository {
             preparedStatement.setString(3, urlCheck.getH1());
             preparedStatement.setString(4, urlCheck.getDescription());
             preparedStatement.setLong(5, urlCheck.getUrlId());
+            preparedStatement.setTimestamp(6, createdAt);
 
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
 
             if (generatedKeys.next()) {
-                Long id = generatedKeys.getLong(1);
+                Long id = generatedKeys.getLong("id");
                 urlCheck.setId(id);
+                urlCheck.setCreatedAt(createdAt);
 
                 log.info("URL check saved successfully with ID: {}", id);
             } else {
-                log.error("Database did not return an ID after saving URL check with URL ID: {}, created at: {}",
-                        urlId, urlCheckCreatedAt);
+                log.error("Database did not return an ID after saving URL check with URL ID: {}", urlId);
                 throw new SQLException("DataBase have not returned an id after saving an entity");
             }
         }
@@ -67,13 +70,41 @@ public class UrlChecksRepository extends BaseRepository {
             List<UrlCheck> urlChecks = new ArrayList<>();
             while (resultSet.next()) {
                 Long checkId = resultSet.getLong("id");
+                int statusCode = resultSet.getInt("status_code");
+                String title = resultSet.getString("title");
+                String h1 = resultSet.getString("h1");
+                String description = resultSet.getString("description");
                 Timestamp createdAt = resultSet.getTimestamp("created_at");
-                UrlCheck urlCheck = new UrlCheck(urlId, createdAt);
+
+                UrlCheck urlCheck = new UrlCheck(urlId);
+
                 urlCheck.setId(checkId);
+                urlCheck.setStatusCode(statusCode);
+                urlCheck.setTitle(title);
+                urlCheck.setH1(h1);
+                urlCheck.setDescription(description);
+                urlCheck.setUrlId(urlId);
+                urlCheck.setCreatedAt(createdAt);
+
                 urlChecks.add(urlCheck);
+
+                log.info("Fetched {} URL checks for URL ID: {}", urlChecks.size(), urlId);
             }
 
             return urlChecks;
+        }
+    }
+
+    public static void removeAll() throws SQLException {
+        String sql = "DELETE from url_checks";
+
+        try (Connection connection = getDataSource().getConnection();
+             Statement statement = connection.createStatement()) {
+
+            statement.executeUpdate(sql);
+            log.info("Remove all url checks from table url_checks");
+        } catch (SQLException e) {
+            log.error("Failed to delete url checks from table url_checks: {}", e.getMessage(), e);
         }
     }
 }
