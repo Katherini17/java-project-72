@@ -50,10 +50,10 @@ content = @`
                 @for(UrlCheck urlCheck : page.getUrlChecks())
                     <tr>
                         <td class="bg-light">${urlCheck.getId()}</td>
-                        <td class="bg-light">Код ответа</td>
-                        <td class="bg-light">title</td>
-                        <td class="bg-light">h1</td>
-                        <td class="bg-light">description</td>
+                        <td class="bg-light">${urlCheck.getStatusCode()}</td>
+                        <td class="bg-light">${urlCheck.getTitle()}</td>
+                        <td class="bg-light">${urlCheck.getH1()}</td>
+                        <td class="bg-light">${urlCheck.getDescription()}</td>
                         <td class="bg-light">${
                             urlCheck.getCreatedAt()
                                 .toLocalDateTime()

@@ -12,15 +12,16 @@ content = @`
                 <caption class="visually-hidden">Список добавленных URL</caption>
 
                 <thead>
-                <tr>
-                    <th class="bg-light">ID</th>
-                    <th class="bg-light">URL</th>
-                    <th class="bg-light">Последняя проверка</th>
-                    <th class="bg-light">Код ответа</th>
-                </tr>
+                    <tr>
+                        <th class="bg-light">ID</th>
+                        <th class="bg-light">URL</th>
+                        <th class="bg-light">Последняя проверка</th>
+                        <th class="bg-light">Код ответа</th>
+                    </tr>
                 </thead>
 
                 <tbody>
+
                 @for(Url url : page.getUrls())
                 <tr>
                     <td class="bg-light">${url.getId()}</td>
@@ -29,6 +30,7 @@ content = @`
                     <td class="bg-light"></td>
                 </tr>
                 @endfor
+
                 </tbody>
             </table>
         </div>
