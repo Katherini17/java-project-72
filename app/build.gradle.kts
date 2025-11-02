@@ -36,8 +36,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 
     implementation("gg.jte:jte:3.2.1")
-
-    implementation("com.konghq:unirest-java:3.14.5")
+    implementation("com.konghq:unirest-java-core:4.5.1")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.3.0")
 }
 
 tasks.test {
