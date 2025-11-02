@@ -200,7 +200,6 @@ public class AppTest {
                 assertEquals(String.valueOf(urlCheck2.getId()), tds2.get(0).text());
                 assertEquals(urlCheck2CreatedAt, tds2.get(5).text());
             }
-
         });
     }
 
