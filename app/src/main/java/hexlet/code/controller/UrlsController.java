@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -96,7 +97,10 @@ public class UrlsController {
         String flash = ctx.consumeSessionAttribute(FLASH_SESSION_ATTRIBUTE);
         String flashType = ctx.consumeSessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE);
 
-        UrlsPage page = new UrlsPage(UrlsRepository.getEntities());
+        List<Url> urls = UrlsRepository.getEntities();
+        Map<Long, UrlCheck> lastUrlsChecks = UrlChecksRepository.getLastUrlsChecks();
+
+        UrlsPage page = new UrlsPage(urls, lastUrlsChecks);
         page.setFlash(flash);
         page.setFlashType(flashType);
 

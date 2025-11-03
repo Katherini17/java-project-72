@@ -10,7 +10,9 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -88,20 +90,59 @@ public class UrlChecksRepository extends BaseRepository {
 
                 urlChecks.add(urlCheck);
 
-                log.info("Fetched {} URL checks for URL ID: {}", urlChecks.size(), urlId);
             }
-
+            log.info("Fetched {} URL checks for URL ID: {}", urlChecks.size(), urlId);
             return urlChecks;
         }
     }
 
-    public static void removeAll() throws SQLException {
+    public static Map<Long, UrlCheck> getLastUrlsChecks() throws SQLException {
+        String sql = """
+                SELECT DISTINCT ON (url_id)
+                *
+                FROM url_checks
+                ORDER BY created_at DESC;
+                """;
+        try (Connection connection = getDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            Map<Long, UrlCheck> lastUrlChecks = new HashMap<>();
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Long checkId = resultSet.getLong("id");
+                int statusCode = resultSet.getInt("status_code");
+                String title = resultSet.getString("title");
+                String h1 = resultSet.getString("h1");
+                String description = resultSet.getString("description");
+                Long urlId = resultSet.getLong("url_id");
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
+
+                UrlCheck urlCheck = new UrlCheck(urlId);
+
+                urlCheck.setId(checkId);
+                urlCheck.setStatusCode(statusCode);
+                urlCheck.setTitle(title);
+                urlCheck.setH1(h1);
+                urlCheck.setDescription(description);
+                urlCheck.setUrlId(urlId);
+                urlCheck.setCreatedAt(createdAt);
+
+                lastUrlChecks.put(urlId, urlCheck);
+            }
+
+            log.info("Fetched {} last URLs checks", lastUrlChecks.size());
+            return lastUrlChecks;
+        }
+    }
+
+    public static void removeAll() {
         String sql = "DELETE from url_checks";
 
         try (Connection connection = getDataSource().getConnection();
-             Statement statement = connection.createStatement()) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            statement.executeUpdate(sql);
+            preparedStatement.executeUpdate(sql);
             log.info("Remove all url checks from table url_checks");
         } catch (SQLException e) {
             log.error("Failed to delete url checks from table url_checks: {}", e.getMessage(), e);

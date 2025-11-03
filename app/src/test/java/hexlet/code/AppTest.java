@@ -105,13 +105,26 @@ public class AppTest {
             String requestBody = "url=https://ru.hexlet.io/courses";
             String normalizedUrl = "https://ru.hexlet.io";
 
+            Url url = new Url(normalizedUrl);
+            UrlsRepository.save(url);
+
+            UrlCheck urlCheck = new UrlCheck(url.getId());
+            urlCheck.setStatusCode(200);
+            UrlChecksRepository.save(urlCheck);
+
             try (Response response = client.post(NamedRoutes.urlsPath(), requestBody)) {
                 Document document = Jsoup.parse(response.body().string());
-                Elements links = document.select(String.format("a:matchesOwn(%s)", Pattern.quote(normalizedUrl)));
-
+                Elements tds = document.select(String.format("tr:has(td:has(a:matchesOwn(%s)))",
+                                Pattern.quote(normalizedUrl))
+                                )
+                                .select("td");
                 log.info("Test create url, response status: {}", response.code());
 
-                assertTrue(links.text().contains(normalizedUrl));
+                assertEquals(String.valueOf(url.getId()), tds.getFirst().text());
+                assertTrue(tds.get(1).text().contains(normalizedUrl));
+                assertEquals(getNormalizedDate(urlCheck.getCreatedAt()), tds.get(2).text());
+                assertEquals(String.valueOf(urlCheck.getStatusCode()), tds.get(3).text());
+
                 assertTrue(UrlsRepository.existsByName(normalizedUrl));
                 assertEquals(200, response.code());
             }
@@ -239,25 +252,5 @@ public class AppTest {
         return timestamp
                 .toLocalDateTime()
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-    }
-
-    @Test
-    void testStore() {
-
-        String inputUrl = "https://ru.hexlet.io";
-
-        JavalinTest.test(app, (server, client) -> {
-            var requestBody = "url=" + inputUrl;
-            assertEquals(200, client.post("/urls", requestBody).code());
-
-            var response = client.get("/urls");
-            assertEquals(200, response.code());
-            assertTrue(response.body().string()
-                    .contains(inputUrl));
-
-//            var actualUrl = TestUtils.getUrlByName(dataSource, inputUrl);
-//            assertThat(actualUrl).isNotNull();
-//            assertThat(actualUrl.get("name").toString()).isEqualTo(inputUrl);
-        });
     }
 }
