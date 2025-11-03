@@ -35,7 +35,6 @@ public class App {
     public static void main(String[] args) throws IOException, SQLException {
         log.info("Starting application...");
         setupAppEnviroment();
-        configureDatabaseConnection();
         Javalin app = getApp();
 
         app.start(getPort());
@@ -43,6 +42,8 @@ public class App {
     }
 
     public static Javalin getApp() throws IOException, SQLException {
+        configureDatabaseConnection();
+
         Javalin app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
