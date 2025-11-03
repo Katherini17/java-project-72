@@ -6,16 +6,35 @@ Page Analyzer is a tool for assessing the basic SEO elements of a webpage. It pe
 * Presence of a <meta name="description"> tag
 * Retrieval of the HTTP status code to determine the page's accessibility
 
-## Technologies
+### Page Analyzer on render
+https://java-project-72-7dn5.onrender.com
 
+### Technologies
 * Java 21
 * Gradle
 * JUnit 5
 * Javalin
 * PostgreSQL
-* H2
+* H2 Database
 * JTE
 * Unirest
+
+## Installation and Running
+
+## Requirements
+* Java Development Kit (JDK) 17 or higher
+* Gradle
+
+## Usage (Examples)
+
+### Adding new URL
+![img.png](assets/img-add.png)
+
+### Checking a Specific URL
+![img.png](assets/img-check.png)
+
+### Viewing All Checked URLs
+![img.png](assets/img-all-urls.png)
 
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/Katherini17/java-project-72/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Katherini17/java-project-72/actions)
@@ -37,6 +56,4 @@ Page Analyzer is a tool for assessing the basic SEO elements of a webpage. It pe
 ### Duplicated lines:
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Katherini17_java-project-72&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Katherini17_java-project-72)
 
-Проект на Render:
-https://java-project-72-7dn5.onrender.com
 
