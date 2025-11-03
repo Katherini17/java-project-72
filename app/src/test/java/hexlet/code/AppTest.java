@@ -1,7 +1,5 @@
 package hexlet.code;
 
-import hexlet.code.controller.RootController;
-import hexlet.code.controller.UrlsController;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlChecksRepository;
