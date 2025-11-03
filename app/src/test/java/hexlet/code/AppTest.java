@@ -67,8 +67,7 @@ public class AppTest {
         log.info("Setting up application before test");
 
         App.setupAppEnviroment();
-        App.configureDatabaseConnection(true);
-        app = App.getApp();
+        app = App.getApp(true);
 
         log.info("Clearing repositories");
 

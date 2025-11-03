@@ -41,8 +41,8 @@ public class App {
         log.info("Application started with APP_ENV: {}, port: {}", getAppEnv(), getPort());
     }
 
-    public static Javalin getApp() throws IOException, SQLException {
-        configureDatabaseConnection();
+    public static Javalin getApp(boolean isTest) throws IOException, SQLException {
+        configureDatabaseConnection(isTest);
 
         Javalin app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
@@ -57,6 +57,11 @@ public class App {
 
         return app;
     }
+
+    public static Javalin getApp() throws SQLException, IOException {
+        return getApp(false);
+    }
+
 
     public static int getPort() {
         String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
@@ -116,9 +121,5 @@ public class App {
         initializeDatabase(dataSource);
 
         BaseRepository.setDataSource(dataSource);
-    }
-
-    public static void configureDatabaseConnection() throws SQLException, IOException {
-        configureDatabaseConnection(false);
     }
 }
