@@ -73,12 +73,6 @@ public class AppTest {
         setupAppEnviroment();
         app = getApp(true);
 
-        app.get(NamedRoutes.rootPath(), RootController::root);
-        app.post(NamedRoutes.urlsPath(), UrlsController::create);
-        app.get(NamedRoutes.urlsPath(), UrlsController::index);
-        app.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
-        app.post(NamedRoutes.urlCheckPath("{id}"), UrlsController::check);
-
         log.info("Clearing repositories");
 
         UrlChecksRepository.removeAll();
@@ -249,5 +243,25 @@ public class AppTest {
         return timestamp
                 .toLocalDateTime()
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+    }
+
+    @Test
+    void testStore() {
+
+        String inputUrl = "https://ru.hexlet.io";
+
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = "url=" + inputUrl;
+            assertEquals(200, client.post("/urls", requestBody).code());
+
+            var response = client.get("/urls");
+            assertEquals(200, response.code());
+            assertTrue(response.body().string()
+                    .contains(inputUrl));
+
+//            var actualUrl = TestUtils.getUrlByName(dataSource, inputUrl);
+//            assertThat(actualUrl).isNotNull();
+//            assertThat(actualUrl.get("name").toString()).isEqualTo(inputUrl);
+        });
     }
 }
