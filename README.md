@@ -6,7 +6,7 @@ Page Analyzer is a tool for assessing the basic SEO elements of a webpage. It pe
 * Presence of a \<meta name="description"\> tag
 * Retrieval of the HTTP status code to determine the page's accessibility
 
-### Page Analyzer on render
+### Page Analyzer on Render
 https://java-project-72-7dn5.onrender.com
 
 ### Technologies
