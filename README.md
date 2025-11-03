@@ -2,7 +2,7 @@
 
 Page Analyzer is a tool for assessing the basic SEO elements of a webpage. It performs the following checks:
 * Presence of the \<title\> tag
-* Presence of exactly one <h1> tag
+* Presence of exactly one \<h1\> tag
 * Presence of a \<meta name="description"\> tag
 * Retrieval of the HTTP status code to determine the page's accessibility
 
