@@ -30,7 +30,7 @@
         </filter>
     </appender>
 
-    <if condition='property("APP_ENV").equals("dev")'>
+    <if condition='property("APP_ENV").equals("development")'>
         <then>
             <root level="DEBUG">
                 <appender-ref ref="CONSOLE" />
