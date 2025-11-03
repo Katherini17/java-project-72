@@ -28,8 +28,6 @@ import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
-import static hexlet.code.App.getApp;
-import static hexlet.code.App.setupAppEnviroment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,8 +66,9 @@ public class AppTest {
     public final void setUpApp() throws SQLException, IOException {
         log.info("Setting up application before test");
 
-        setupAppEnviroment();
-        app = getApp(true);
+        App.setupAppEnviroment();
+        App.configureDatabaseConnection(true);
+        app = App.getApp();
 
         log.info("Clearing repositories");
 

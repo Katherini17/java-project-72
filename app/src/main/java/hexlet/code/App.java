@@ -35,25 +35,14 @@ public class App {
     public static void main(String[] args) throws IOException, SQLException {
         log.info("Starting application...");
         setupAppEnviroment();
+        configureDatabaseConnection();
         Javalin app = getApp();
 
         app.start(getPort());
         log.info("Application started with APP_ENV: {}, port: {}", getAppEnv(), getPort());
     }
 
-    public static Javalin getApp() throws SQLException, IOException {
-        return getApp(false);
-    }
-    public static Javalin getApp(boolean isTest) throws IOException, SQLException {
-        log.info("Configuring database connection");
-        HikariConfig hikariConfig =  new HikariConfig();
-        String databaseUrl = isTest ? DEFAULT_DATABASE_URL : getDatabaseUrl();
-        hikariConfig.setJdbcUrl(databaseUrl);
-
-        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
-        initializeDatabase(dataSource);
-
-        BaseRepository.setDataSource(dataSource);
+    public static Javalin getApp() throws IOException, SQLException {
         Javalin app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
@@ -114,5 +103,21 @@ public class App {
         } catch (URISyntaxException e) {
             log.error("Failed to read schema.sql due to invalid URI: {}", e.getMessage(), e);
         }
+    }
+
+    public static void configureDatabaseConnection(boolean isTest) throws SQLException, IOException {
+        log.info("Configuring database connection");
+        HikariConfig hikariConfig =  new HikariConfig();
+        String databaseUrl = isTest ? DEFAULT_DATABASE_URL : getDatabaseUrl();
+        hikariConfig.setJdbcUrl(databaseUrl);
+
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+        initializeDatabase(dataSource);
+
+        BaseRepository.setDataSource(dataSource);
+    }
+
+    public static void configureDatabaseConnection() throws SQLException, IOException {
+        configureDatabaseConnection(false);
     }
 }
