@@ -17,10 +17,10 @@ content = @`
 
                 <thead>
                     <tr>
-                        <th class="bg-light">ID</th>
-                        <th class="bg-light">URL</th>
-                        <th class="bg-light">Последняя проверка</th>
-                        <th class="bg-light">Код ответа</th>
+                        <th class="bg-light text-center align-middle">ID</th>
+                        <th class="bg-light text-center align-middle">URL</th>
+                        <th class="bg-light text-center align-middle">Последняя проверка</th>
+                        <th class="bg-light text-center align-middle">Код ответа</th>
                     </tr>
                 </thead>
 
@@ -28,15 +28,17 @@ content = @`
 
                 @for(Url url : page.getUrls())
                 <tr>
-                    <td class="bg-light">${url.getId()}</td>
-                    <td class="bg-light"><a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a></td>
+                    <td class="bg-light text-center align-middle">${url.getId()}</td>
+                    <td class="bg-light text-center align-middle">
+                        <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
+                    </td>
                     !{UrlCheck lastUrlCheck = page.getLastUrlsChecks().get(url.getId());}
                     @if(lastUrlCheck != null)
-                        <td class="bg-light">${
+                        <td class="bg-light text-center align-middle">${
                             lastUrlCheck.getCreatedAt()
                                 .toLocalDateTime()
                                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))}</td>
-                        <td class="bg-light">${lastUrlCheck.getStatusCode()}</td>
+                        <td class="bg-light text-center align-middle">${lastUrlCheck.getStatusCode()}</td>
                     @else
                         <td class="bg-light"></td>
                         <td class="bg-light"></td>

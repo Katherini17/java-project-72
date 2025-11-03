@@ -37,24 +37,24 @@ content = @`
 
                 <thead>
                 <tr>
-                    <th class="bg-light">ID</th>
-                    <th class="bg-light">Код ответа</th>
-                    <th class="bg-light">title</th>
-                    <th class="bg-light">h1</th>
-                    <th class="bg-light">description</th>
-                    <th class="bg-light">Дата проверки</th>
+                    <th class="bg-light text-center align-middle">ID</th>
+                    <th class="bg-light text-center align-middle">Код ответа</th>
+                    <th class="bg-light text-center align-middle">title</th>
+                    <th class="bg-light text-center align-middle">h1</th>
+                    <th class="bg-light text-center align-middle">description</th>
+                    <th class="bg-light text-center align-middle">Дата проверки</th>
                 </tr>
                 </thead>
 
                 <tbody>
                 @for(UrlCheck urlCheck : page.getUrlChecks())
                     <tr>
-                        <td class="bg-light">${urlCheck.getId()}</td>
-                        <td class="bg-light">${urlCheck.getStatusCode()}</td>
-                        <td class="bg-light">${urlCheck.getTitle()}</td>
-                        <td class="bg-light">${urlCheck.getH1()}</td>
-                        <td class="bg-light">${urlCheck.getDescription()}</td>
-                        <td class="bg-light">${
+                        <td class="bg-light text-center align-middle">${urlCheck.getId()}</td>
+                        <td class="bg-light text-center align-middle">${urlCheck.getStatusCode()}</td>
+                        <td class="bg-light text-center align-middle">${urlCheck.getTitle()}</td>
+                        <td class="bg-light text-center align-middle">${urlCheck.getH1()}</td>
+                        <td class="bg-light text-center align-middle">${urlCheck.getDescription()}</td>
+                        <td class="bg-light text-center align-middle">${
                             urlCheck.getCreatedAt()
                                 .toLocalDateTime()
                                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
