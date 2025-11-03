@@ -101,7 +101,7 @@ public class UrlChecksRepository extends BaseRepository {
                 SELECT DISTINCT ON (url_id)
                 *
                 FROM url_checks
-                ORDER BY created_at DESC;
+                ORDER BY url_id, created_at DESC;
                 """;
         try (Connection connection = getDataSource().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
