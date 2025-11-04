@@ -50,7 +50,7 @@ public class App {
         });
 
         app.get(NamedRoutes.rootPath(), RootController::root);
-        app.post(NamedRoutes.urlsPath(), UrlsController::create);
+        app.post(NamedRoutes.urlsPath(), UrlsController::createUrl);
         app.get(NamedRoutes.urlsPath(), UrlsController::index);
         app.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
         app.post(NamedRoutes.urlCheckPath("{id}"), UrlsController::check);

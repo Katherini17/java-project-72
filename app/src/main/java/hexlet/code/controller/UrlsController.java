@@ -46,19 +46,43 @@ public class UrlsController {
     private static final String FLASH_SESSION_ATTRIBUTE = "flash";
     private static final String FLASH_TYPE_SESSION_ATTRIBUTE = "flash-type";
 
-    public static void create(Context ctx) {
-        log.info("Attempting to create URL from request");
+    public static void createUrl(Context ctx) {
+        log.info("Attempting to createUrl URL from request");
+        String fullUrlStr;
 
         try {
-            String fullUrlStr = ctx.formParamAsClass("url", String.class)
+            fullUrlStr = ctx.formParamAsClass("url", String.class)
                     .check(value -> value != null && !value.trim().isEmpty(), INVALID_URL_FLASH_MESSAGE)
                     .get()
                     .trim()
                     .toLowerCase();
+        } catch (ValidationException e) {
+            log.error("Failed to createUrl URL: {}", e.getMessage(), e);
 
-            URL fullUrl = URI.create(fullUrlStr).toURL();
-            String normalizedUrlStr = getNormalizedUrl(fullUrl);
+            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, INVALID_URL_FLASH_MESSAGE);
+            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
 
+            ctx.redirect(NamedRoutes.rootPath());
+            return;
+        }
+
+        URL parsedUrl;
+
+        try {
+            parsedUrl = URI.create(fullUrlStr).toURL();
+        } catch (MalformedURLException | IllegalArgumentException e) {
+            log.error("Failed to createUrl URL: {}", e.getMessage(), e);
+
+            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, INVALID_URL_FLASH_MESSAGE);
+            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
+
+            ctx.redirect(NamedRoutes.rootPath());
+            return;
+        }
+
+        String normalizedUrlStr = getNormalizedUrl(parsedUrl);
+
+        try {
             if (UrlsRepository.existsByName(normalizedUrlStr)) {
                 log.info("URL already exists: {}", normalizedUrlStr);
                 ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, EXISTING_URL_FLASH_MESSAGE);
@@ -71,25 +95,16 @@ public class UrlsController {
             Url url = new Url(normalizedUrlStr);
             UrlsRepository.save(url);
             log.info("URL created successfully: {}", normalizedUrlStr);
-
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_ADDED_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
-
-            ctx.redirect(NamedRoutes.urlsPath());
-
-        } catch (MalformedURLException | ValidationException | IllegalArgumentException e) {
-            log.error("Failed to create URL: {}", e.getMessage(), e);
-
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, INVALID_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
-
-            ctx.redirect(NamedRoutes.rootPath());
         } catch (SQLException e) {
-            log.error("Failed to create URL: {}", e.getMessage(), e);
-
+            log.error("Failed to createUrl URL: {}", e.getMessage(), e);
             ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_ADDED_URL_FLASH_MESSAGE);
             ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
         }
+
+        ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_ADDED_URL_FLASH_MESSAGE);
+        ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
+
+        ctx.redirect(NamedRoutes.urlsPath());
     }
 
     public static void index(Context ctx) throws SQLException {
@@ -133,44 +148,69 @@ public class UrlsController {
         Url url = UrlsRepository.find(urlId)
                 .orElseThrow(() -> new NotFoundResponse("URL not found"));
 
+        HttpResponse<String> response;
         try {
-            HttpResponse<String> response = Unirest.get(url.getName())
+            response = Unirest.get(url.getName())
                     .asString();
-            String responseBody = response.getBody();
-
-            if (responseBody == null || responseBody.isEmpty()) {
-                log.error("Empty response body for URL: {}", url.getName());
-                throw new IllegalStateException("Response body is empty for URL: " + url.getName());
-            }
-
-            Document document = Jsoup.parse(responseBody);
-
-            int statusCode = response.getStatus();
-            log.info("Checking url, status code: {}", statusCode);
-            String titleContent = document.title();
-
-            Element h1Tag = document.selectFirst("h1");
-            String h1Content = h1Tag != null ? h1Tag.text() : "";
-
-            Element descriptionMetaTag = document.selectFirst("meta[name=description]");
-            String descriptionContent = descriptionMetaTag != null ? descriptionMetaTag.attr("content") : "";
-
-            UrlCheck urlCheck = new UrlCheck(urlId);
-            urlCheck.setStatusCode(statusCode);
-            urlCheck.setTitle(titleContent);
-            urlCheck.setH1(h1Content);
-            urlCheck.setDescription(descriptionContent);
-
-            UrlChecksRepository.save(urlCheck);
-
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
-        } catch (SQLException | IllegalStateException | UnirestException e) {
+        } catch (UnirestException e) {
             log.error("Error during URL check: {}", e.getMessage(), e);
 
             ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
             ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
+
+            ctx.redirect(NamedRoutes.urlPath(urlId));
+            return;
         }
+
+        String responseBody = response.getBody();
+
+        try {
+            if (responseBody == null || responseBody.isEmpty()) {
+                log.error("Empty response body for URL: {}", url.getName());
+                throw new IllegalStateException("Response body is empty for URL: " + url.getName());
+            }
+        } catch (IllegalStateException e) {
+            log.error("Error during URL check: {}", e.getMessage(), e);
+
+            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
+            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
+
+            ctx.redirect(NamedRoutes.urlPath(urlId));
+            return;
+        }
+
+        Document document = Jsoup.parse(responseBody);
+
+        int statusCode = response.getStatus();
+        log.info("Checking url, status code: {}", statusCode);
+        String titleContent = document.title();
+
+        Element h1Tag = document.selectFirst("h1");
+        String h1Content = h1Tag != null ? h1Tag.text() : "";
+
+        Element descriptionMetaTag = document.selectFirst("meta[name=description]");
+        String descriptionContent = descriptionMetaTag != null ? descriptionMetaTag.attr("content") : "";
+
+        UrlCheck urlCheck = new UrlCheck(urlId);
+        urlCheck.setStatusCode(statusCode);
+        urlCheck.setTitle(titleContent);
+        urlCheck.setH1(h1Content);
+        urlCheck.setDescription(descriptionContent);
+
+        try {
+            UrlChecksRepository.save(urlCheck);
+        } catch (SQLException e) {
+            log.error("Error during URL check: {}", e.getMessage(), e);
+
+            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
+            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
+
+            ctx.redirect(NamedRoutes.urlPath(urlId));
+            return;
+        }
+
+        ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
+        ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
 
         ctx.redirect(NamedRoutes.urlPath(urlId));
     }
@@ -182,6 +222,5 @@ public class UrlsController {
 
         return String.format("%s://%s%s", protocol, host, port);
     }
-
 }
 

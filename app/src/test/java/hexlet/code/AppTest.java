@@ -118,7 +118,7 @@ public class AppTest {
                                 Pattern.quote(normalizedUrl))
                                 )
                                 .select("td");
-                log.info("Test create url, response status: {}", response.code());
+                log.info("Test createUrl url, response status: {}", response.code());
 
                 assertEquals(String.valueOf(url.getId()), tds.getFirst().text());
                 assertTrue(tds.get(1).text().contains(normalizedUrl));
@@ -137,7 +137,7 @@ public class AppTest {
             String requestBody = "url=https://ru.hexlet.io/courses";
 
             try (Response response = client.post(NamedRoutes.urlsPath(), requestBody)) {
-                log.info("Test create existing url, response status: {}", response.code());
+                log.info("Test createUrl existing url, response status: {}", response.code());
 
                 assertEquals(200, response.code());
             }
@@ -150,7 +150,7 @@ public class AppTest {
             String requestBody = "url=12345";
 
             try (Response response = client.post(NamedRoutes.urlsPath(), requestBody)) {
-                log.info("Test create invalid url, response status: {}", response.code());
+                log.info("Test createUrl invalid url, response status: {}", response.code());
 
                 assertEquals(200, response.code());
             }
