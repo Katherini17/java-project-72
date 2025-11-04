@@ -18,7 +18,7 @@ import java.util.Optional;
 public class UrlsRepository extends BaseRepository {
     public static void save(Url url) throws SQLException {
         String urlName = url.getName();
-        Timestamp createdAt = Timestamp.from(Instant.now());
+        Instant createdAt = Instant.now();
 
         log.info("Attempting to save URL: {}", urlName);
 
@@ -30,7 +30,7 @@ public class UrlsRepository extends BaseRepository {
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, urlName);
-            preparedStatement.setTimestamp(2, createdAt);
+            preparedStatement.setTimestamp(2, Timestamp.from(createdAt));
 
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -65,7 +65,7 @@ public class UrlsRepository extends BaseRepository {
 
                 Url url = new Url(name);
                 url.setId(id);
-                url.setCreatedAt(createdAt);
+                url.setCreatedAt(createdAt.toInstant());
                 urls.add(url);
             }
 
@@ -117,7 +117,7 @@ public class UrlsRepository extends BaseRepository {
 
                 Url url = new Url(name);
                 url.setId(id);
-                url.setCreatedAt(createdAt);
+                url.setCreatedAt(createdAt.toInstant());
 
                 return Optional.of(url);
             } else {
@@ -128,7 +128,7 @@ public class UrlsRepository extends BaseRepository {
         return Optional.empty();
     }
 
-    public static void removeAll() throws SQLException {
+    public static void removeAll() {
         String sql = "DELETE from urls";
 
         try (Connection connection = getDataSource().getConnection();

@@ -24,7 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
@@ -248,9 +249,9 @@ public class AppTest {
         return Files.readString(filePath).trim();
     }
 
-    private static String getNormalizedDate(Timestamp timestamp) {
-        return timestamp
-                .toLocalDateTime()
+    private static String getNormalizedDate(Instant instant) {
+        return instant
+                .atZone(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
     }
 }

@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UrlChecksRepository extends BaseRepository {
     public static void save(UrlCheck urlCheck) throws SQLException {
         Long urlId = urlCheck.getUrlId();
-        Timestamp createdAt = Timestamp.from(Instant.now());
+        Instant createdAt = Instant.now();
 
         log.info("Attempting to save URL check with url ID: {}", urlId);
 
@@ -37,7 +37,7 @@ public class UrlChecksRepository extends BaseRepository {
             preparedStatement.setString(3, urlCheck.getH1());
             preparedStatement.setString(4, urlCheck.getDescription());
             preparedStatement.setLong(5, urlCheck.getUrlId());
-            preparedStatement.setTimestamp(6, createdAt);
+            preparedStatement.setTimestamp(6, Timestamp.from(createdAt));
 
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -76,7 +76,8 @@ public class UrlChecksRepository extends BaseRepository {
                 String title = resultSet.getString("title");
                 String h1 = resultSet.getString("h1");
                 String description = resultSet.getString("description");
-                Timestamp createdAt = resultSet.getTimestamp("created_at");
+                Instant createdAt = resultSet.getTimestamp("created_at")
+                        .toInstant();
 
                 UrlCheck urlCheck = new UrlCheck(urlId);
 
@@ -126,7 +127,7 @@ public class UrlChecksRepository extends BaseRepository {
                 urlCheck.setH1(h1);
                 urlCheck.setDescription(description);
                 urlCheck.setUrlId(urlId);
-                urlCheck.setCreatedAt(createdAt);
+                urlCheck.setCreatedAt(createdAt.toInstant());
 
                 lastUrlChecks.put(urlId, urlCheck);
             }

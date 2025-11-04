@@ -1,5 +1,6 @@
 @import hexlet.code.model.Url
 @import hexlet.code.model.UrlCheck
+@import java.time.ZoneId
 @import hexlet.code.util.NamedRoutes
 @import java.time.format.DateTimeFormatter
 @import hexlet.code.dto.urls.UrlPage
@@ -16,7 +17,7 @@ content = @`
                     <span> ${
                             page.getUrl()
                                 .getCreatedAt()
-                                .toLocalDateTime()
+                                .atZone(ZoneId.systemDefault())
                                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
                         }</span>
                 </li>
@@ -56,7 +57,7 @@ content = @`
                         <td class="bg-light text-center align-middle">${urlCheck.getDescription()}</td>
                         <td class="bg-light text-center align-middle">${
                             urlCheck.getCreatedAt()
-                                .toLocalDateTime()
+                                .atZone(ZoneId.systemDefault())
                                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
                             }
                         </td>

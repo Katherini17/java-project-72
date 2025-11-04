@@ -1,6 +1,7 @@
 
 @import hexlet.code.model.Url
 @import hexlet.code.model.UrlCheck
+@import java.time.ZoneId
 @import hexlet.code.util.NamedRoutes
 @import java.time.format.DateTimeFormatter
 @import hexlet.code.dto.urls.UrlsPage
@@ -36,8 +37,9 @@ content = @`
                     @if(lastUrlCheck != null)
                         <td class="bg-light text-center align-middle">${
                             lastUrlCheck.getCreatedAt()
-                                .toLocalDateTime()
-                                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))}</td>
+                                .atZone(ZoneId.systemDefault())
+                                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))}
+                        </td>
                         <td class="bg-light text-center align-middle">${lastUrlCheck.getStatusCode()}</td>
                     @else
                         <td class="bg-light"></td>
