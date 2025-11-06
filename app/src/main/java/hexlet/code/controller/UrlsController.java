@@ -127,27 +127,19 @@ public class UrlsController {
                 .orElseThrow(() -> new NotFoundResponse("URL not found"));
 
         HttpResponse<String> response;
+        String responseBody;
         try {
             response = Unirest.get(url.getName())
                     .asString();
-        } catch (UnirestException e) {
-            log.error("Error during URL check: {}", e.getMessage(), e);
+            responseBody = response.getBody();
 
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
 
-            ctx.redirect(NamedRoutes.urlPath(urlId));
-            return;
-        }
-
-        String responseBody = response.getBody();
-
-        try {
             if (responseBody == null || responseBody.isEmpty()) {
                 log.error("Empty response body for URL: {}", url.getName());
                 throw new IllegalStateException("Response body is empty for URL: " + url.getName());
             }
-        } catch (IllegalStateException e) {
+
+        } catch (UnirestException | IllegalStateException e) {
             log.error("Error during URL check: {}", e.getMessage(), e);
 
             ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
