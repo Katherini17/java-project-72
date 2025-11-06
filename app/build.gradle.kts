@@ -39,6 +39,8 @@ dependencies {
     implementation("gg.jte:jte:3.2.1")
     implementation("com.konghq:unirest-java-core:4.5.1")
     testImplementation("com.squareup.okhttp3:mockwebserver:5.3.0")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
 }
 
 tasks.test {

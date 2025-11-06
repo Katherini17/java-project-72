@@ -9,8 +9,6 @@ import hexlet.code.repository.UrlsRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
-import io.javalin.validation.ValidationException;
-
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestException;
@@ -46,25 +44,11 @@ public class UrlsController {
     private static final String FLASH_SESSION_ATTRIBUTE = "flash";
     private static final String FLASH_TYPE_SESSION_ATTRIBUTE = "flash-type";
 
-    public static void createUrl(Context ctx) {
+    public static void createUrl(Context ctx) throws SQLException {
         log.info("Attempting to createUrl URL from request");
-        String fullUrlStr;
 
-        try {
-            fullUrlStr = ctx.formParamAsClass("url", String.class)
-                    .check(value -> value != null && !value.trim().isEmpty(), INVALID_URL_FLASH_MESSAGE)
-                    .get()
-                    .trim()
-                    .toLowerCase();
-        } catch (ValidationException e) {
-            log.error("Failed to createUrl URL: {}", e.getMessage(), e);
-
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, INVALID_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
-
-            ctx.redirect(NamedRoutes.rootPath());
-            return;
-        }
+        String formParamUrl = ctx.formParam("url");
+        String fullUrlStr = formParamUrl != null ? formParamUrl.trim().toLowerCase() : null;
 
         URL parsedUrl;
 
@@ -82,24 +66,18 @@ public class UrlsController {
 
         String normalizedUrlStr = getNormalizedUrl(parsedUrl);
 
-        try {
-            if (UrlsRepository.existsByName(normalizedUrlStr)) {
-                log.info("URL already exists: {}", normalizedUrlStr);
-                ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, EXISTING_URL_FLASH_MESSAGE);
-                ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ALERT_FLASH_TYPE);
+        if (UrlsRepository.existsByName(normalizedUrlStr)) {
+            log.info("URL already exists: {}", normalizedUrlStr);
+            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, EXISTING_URL_FLASH_MESSAGE);
+            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ALERT_FLASH_TYPE);
 
-                ctx.redirect(NamedRoutes.urlsPath());
-                return;
-            }
-
-            Url url = new Url(normalizedUrlStr);
-            UrlsRepository.save(url);
-            log.info("URL created successfully: {}", normalizedUrlStr);
-        } catch (SQLException e) {
-            log.error("Failed to createUrl URL: {}", e.getMessage(), e);
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_ADDED_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
+            ctx.redirect(NamedRoutes.urlsPath());
+            return;
         }
+
+        Url url = new Url(normalizedUrlStr);
+        UrlsRepository.save(url);
+        log.info("URL created successfully: {}", normalizedUrlStr);
 
         ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_ADDED_URL_FLASH_MESSAGE);
         ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
@@ -197,17 +175,7 @@ public class UrlsController {
         urlCheck.setH1(h1Content);
         urlCheck.setDescription(descriptionContent);
 
-        try {
-            UrlChecksRepository.save(urlCheck);
-        } catch (SQLException e) {
-            log.error("Error during URL check: {}", e.getMessage(), e);
-
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
-
-            ctx.redirect(NamedRoutes.urlPath(urlId));
-            return;
-        }
+        UrlChecksRepository.save(urlCheck);
 
         ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
         ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
@@ -218,7 +186,10 @@ public class UrlsController {
     public static String getNormalizedUrl(URL url) {
         String protocol = url.getProtocol();
         String host = url.getHost();
-        String port = url.getPort() != -1 ? String.format(":%d", url.getPort()) : "";
+        String port = url.getPort() != -1
+                ? String.format(":%d", url.getPort())
+                    .toLowerCase()
+                : "";
 
         return String.format("%s://%s%s", protocol, host, port);
     }

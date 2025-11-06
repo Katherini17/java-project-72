@@ -4,6 +4,8 @@ import hexlet.code.controller.RootController;
 import hexlet.code.controller.UrlsController;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
+import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -28,6 +30,8 @@ import java.sql.Statement;
 
 @Slf4j
 public class App {
+    private record ErrorResponse(String error, String message) { };
+
     private static final String DEFAULT_PORT = "7070";
     private static final String DEFAULT_DATABASE_URL = "jdbc:h2:mem:project";
     private static final String DEFAULT_APP_ENV = "development";
@@ -47,6 +51,22 @@ public class App {
         Javalin app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
+        });
+
+        app.exception(Exception.class, (e, ctx) -> {
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            ctx.json(new ErrorResponse("Internal server error", e.getMessage()));
+        });
+
+        // Обработчик для конкретных исключений
+        app.exception(IllegalArgumentException.class, (e, ctx) -> {
+            ctx.status(HttpStatus.BAD_REQUEST);
+            ctx.json(new ErrorResponse("Bad request", e.getMessage()));
+        });
+
+        app.exception(NotFoundResponse.class, (e, ctx) -> {
+            ctx.status(HttpStatus.NOT_FOUND);
+            ctx.json(new ErrorResponse("Not found", e.getMessage()));
         });
 
         app.get(NamedRoutes.rootPath(), RootController::root);

@@ -1,5 +1,4 @@
 package hexlet.code.repository;
-
 import hexlet.code.model.UrlCheck;
 
 import java.sql.Connection;
