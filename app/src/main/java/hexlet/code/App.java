@@ -70,6 +70,11 @@ public class App {
             ctx.json(new ErrorResponse("Not found", e.getMessage()));
         });
 
+        app.exception(SQLException.class, (e, ctx) -> {
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            ctx.json(new ErrorResponse("Database error", e.getMessage()));
+        });
+
         app.get(NamedRoutes.rootPath(), RootController::root);
         app.post(NamedRoutes.urlsPath(), UrlsController::createUrl);
         app.get(NamedRoutes.urlsPath(), UrlsController::index);
