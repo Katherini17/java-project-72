@@ -9,14 +9,7 @@ import hexlet.code.repository.UrlsRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
-import kong.unirest.core.HttpResponse;
-import kong.unirest.core.Unirest;
-import kong.unirest.core.UnirestException;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -27,22 +20,11 @@ import java.util.Map;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 @Slf4j
-public class UrlsController {
+public class UrlsController extends BaseController {
 
     private static final String INVALID_URL_FLASH_MESSAGE = "Некорректный URL";
     private static final String EXISTING_URL_FLASH_MESSAGE = "Страница уже существует";
     private static final String SUCCESSFULLY_ADDED_URL_FLASH_MESSAGE = "Страница успешно добавлена";
-    private static final String UNSUCCESSFULLY_ADDED_URL_FLASH_MESSAGE = "Возникла ошибка при добавлении страницы";
-
-    private static final String SUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE = "Страница успешно проверена";
-    private static final String UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE = "Возникла ошибка при проверке страницы";
-
-    private static final String ERROR_FLASH_TYPE = "error";
-    private static final String ALERT_FLASH_TYPE = "alert";
-    private static final String SUCCESS_FLASH_TYPE = "success";
-
-    private static final String FLASH_SESSION_ATTRIBUTE = "flash";
-    private static final String FLASH_TYPE_SESSION_ATTRIBUTE = "flash-type";
 
     public static void createUrl(Context ctx) throws SQLException {
         log.info("Attempting to createUrl URL from request");
@@ -117,62 +99,6 @@ public class UrlsController {
         page.setFlashType(flashType);
 
         ctx.render("urls/show.jte", model("page", page));
-    }
-
-    public static void check(Context ctx) throws SQLException {
-        log.info("Attempting to check URL from request");
-
-        Long urlId = ctx.pathParamAsClass("id", Long.class).get();
-        Url url = UrlsRepository.find(urlId)
-                .orElseThrow(() -> new NotFoundResponse("URL not found"));
-
-        HttpResponse<String> response;
-        String responseBody;
-        try {
-            response = Unirest.get(url.getName())
-                    .asString();
-            responseBody = response.getBody();
-
-
-            if (responseBody == null || responseBody.isEmpty()) {
-                log.error("Empty response body for URL: {}", url.getName());
-                throw new IllegalStateException("Response body is empty for URL: " + url.getName());
-            }
-
-        } catch (UnirestException | IllegalStateException e) {
-            log.error("Error during URL check: {}", e.getMessage(), e);
-
-            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, UNSUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
-            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
-
-            ctx.redirect(NamedRoutes.urlPath(urlId));
-            return;
-        }
-
-        Document document = Jsoup.parse(responseBody);
-
-        int statusCode = response.getStatus();
-        log.info("Checking url, status code: {}", statusCode);
-        String titleContent = document.title();
-
-        Element h1Tag = document.selectFirst("h1");
-        String h1Content = h1Tag != null ? h1Tag.text() : "";
-
-        Element descriptionMetaTag = document.selectFirst("meta[name=description]");
-        String descriptionContent = descriptionMetaTag != null ? descriptionMetaTag.attr("content") : "";
-
-        UrlCheck urlCheck = new UrlCheck(urlId);
-        urlCheck.setStatusCode(statusCode);
-        urlCheck.setTitle(titleContent);
-        urlCheck.setH1(h1Content);
-        urlCheck.setDescription(descriptionContent);
-
-        UrlChecksRepository.save(urlCheck);
-
-        ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
-        ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
-
-        ctx.redirect(NamedRoutes.urlPath(urlId));
     }
 
     public static String getNormalizedUrl(URL url) {

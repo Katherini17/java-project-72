@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 @Slf4j
-public class RootController {
+public class RootController extends BaseController {
 
     public static void root(Context ctx) {
         log.info("Rendering root page for request: {}", ctx.path());

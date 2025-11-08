@@ -216,7 +216,7 @@ public class AppTest {
             UrlsRepository.save(testUrlObj);
 
             try (Response response = client.post(NamedRoutes.urlCheckPath(testUrlObj.getId()))) {
-                log.info("Test check url, response status: {}", response.code());
+                log.info("Test create url, response status: {}", response.code());
 
                 assertEquals(200, response.code());
 

@@ -5,7 +5,6 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Katherini17_java-project-72&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Katherini17_java-project-72) [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Katherini17_java-project-72&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Katherini17_java-project-72) 
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Katherini17_java-project-72&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Katherini17_java-project-72)
 
-
 Page Analyzer is a tool for assessing the basic SEO elements of a webpage. It performs the following checks:
 * Presence of a \<title\> tag
 * Presence of a \<h1\> tag

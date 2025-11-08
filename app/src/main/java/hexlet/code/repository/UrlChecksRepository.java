@@ -21,7 +21,7 @@ public class UrlChecksRepository extends BaseRepository {
         Long urlId = urlCheck.getUrlId();
         Instant createdAt = Instant.now();
 
-        log.info("Attempting to save URL check with url ID: {}", urlId);
+        log.info("Attempting to save URL create with url ID: {}", urlId);
 
         String sql = """
                 INSERT INTO url_checks (status_code, title, h1, description, url_id, created_at)
@@ -46,9 +46,9 @@ public class UrlChecksRepository extends BaseRepository {
                 urlCheck.setId(id);
                 urlCheck.setCreatedAt(createdAt);
 
-                log.info("URL check saved successfully with ID: {}", id);
+                log.info("URL create saved successfully with ID: {}", id);
             } else {
-                log.error("Database did not return an ID after saving URL check with URL ID: {}", urlId);
+                log.error("Database did not return an ID after saving URL create with URL ID: {}", urlId);
                 throw new SQLException("DataBase have not returned an id after saving an entity");
             }
         }
