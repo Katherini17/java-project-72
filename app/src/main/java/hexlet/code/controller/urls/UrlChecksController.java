@@ -44,6 +44,31 @@ public class UrlChecksController extends BaseController {
                 throw new IllegalStateException("Response body is empty for URL: " + url.getName());
             }
 
+            Document document = Jsoup.parse(responseBody);
+
+            int statusCode = response.getStatus();
+            log.info("Checking url, status code: {}", statusCode);
+            String titleContent = document.title();
+
+            Element h1Tag = document.selectFirst("h1");
+            String h1Content = h1Tag != null ? h1Tag.text() : "";
+
+            Element descriptionMetaTag = document.selectFirst("meta[name=description]");
+            String descriptionContent = descriptionMetaTag != null ? descriptionMetaTag.attr("content") : "";
+
+            UrlCheck urlCheck = new UrlCheck(urlId);
+            urlCheck.setStatusCode(statusCode);
+            urlCheck.setTitle(titleContent);
+            urlCheck.setH1(h1Content);
+            urlCheck.setDescription(descriptionContent);
+
+            UrlChecksRepository.save(urlCheck);
+
+            ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
+            ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
+
+            ctx.redirect(NamedRoutes.urlPath(urlId));
+
         } catch (UnirestException | IllegalStateException e) {
             log.error("Error during URL create: {}", e.getMessage(), e);
 
@@ -51,32 +76,6 @@ public class UrlChecksController extends BaseController {
             ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, ERROR_FLASH_TYPE);
 
             ctx.redirect(NamedRoutes.urlPath(urlId));
-            return;
         }
-
-        Document document = Jsoup.parse(responseBody);
-
-        int statusCode = response.getStatus();
-        log.info("Checking url, status code: {}", statusCode);
-        String titleContent = document.title();
-
-        Element h1Tag = document.selectFirst("h1");
-        String h1Content = h1Tag != null ? h1Tag.text() : "";
-
-        Element descriptionMetaTag = document.selectFirst("meta[name=description]");
-        String descriptionContent = descriptionMetaTag != null ? descriptionMetaTag.attr("content") : "";
-
-        UrlCheck urlCheck = new UrlCheck(urlId);
-        urlCheck.setStatusCode(statusCode);
-        urlCheck.setTitle(titleContent);
-        urlCheck.setH1(h1Content);
-        urlCheck.setDescription(descriptionContent);
-
-        UrlChecksRepository.save(urlCheck);
-
-        ctx.sessionAttribute(FLASH_SESSION_ATTRIBUTE, SUCCESSFULLY_CHECKED_URL_FLASH_MESSAGE);
-        ctx.sessionAttribute(FLASH_TYPE_SESSION_ATTRIBUTE, SUCCESS_FLASH_TYPE);
-
-        ctx.redirect(NamedRoutes.urlPath(urlId));
     }
 }
