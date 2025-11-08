@@ -1,7 +1,7 @@
 package hexlet.code;
 
 import hexlet.code.controller.RootController;
-import hexlet.code.controller.UrlChecksController;
+import hexlet.code.controller.urls.UrlChecksController;
 import hexlet.code.controller.UrlsController;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
