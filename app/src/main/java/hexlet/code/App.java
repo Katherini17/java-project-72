@@ -57,12 +57,12 @@ public class App {
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
-//        app.exception(Exception.class, (e, ctx) -> {
-//            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
-//            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), "Internal server error");
-//            ctx.render("error.jte", model("page", page));
-//            log.error("Internal server error: ", e);
-//        });
+        app.exception(Exception.class, (e, ctx) -> {
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), "Internal server error");
+            ctx.render("error.jte", model("page", page));
+            log.error("Internal server error: ", e);
+        });
 
         app.exception(IllegalArgumentException.class, (e, ctx) -> {
             ctx.status(HttpStatus.BAD_REQUEST);
