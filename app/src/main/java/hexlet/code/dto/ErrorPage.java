@@ -1,6 +1,5 @@
 package hexlet.code.dto;
 
-import io.javalin.http.HttpStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
