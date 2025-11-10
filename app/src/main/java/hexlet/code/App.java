@@ -59,28 +59,28 @@ public class App {
 
         app.exception(Exception.class, (e, ctx) -> {
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
-            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), "Internal server error");
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage());
             ctx.render("error.jte", model("page", page));
             log.error("Internal server error: ", e);
         });
 
         app.exception(IllegalArgumentException.class, (e, ctx) -> {
             ctx.status(HttpStatus.BAD_REQUEST);
-            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.BAD_REQUEST), "Bad request");
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.BAD_REQUEST), e.getMessage());
             ctx.render("error.jte", model("page", page));
             log.error("Bad request: ", e);
         });
 
         app.exception(NotFoundResponse.class, (e, ctx) -> {
             ctx.status(HttpStatus.NOT_FOUND);
-            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.NOT_FOUND), "Not found");
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.NOT_FOUND), e.getMessage());
             ctx.render("error.jte", model("page", page));
             log.error("Not found: ", e);
         });
 
         app.exception(SQLException.class, (e, ctx) -> {
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
-            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), "Database error");
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), e.getMessage());
             ctx.render("error.jte", model("page", page));
             log.error("Database error: ", e);
         });
