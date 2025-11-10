@@ -3,6 +3,7 @@ package hexlet.code;
 import hexlet.code.controller.RootController;
 import hexlet.code.controller.urls.UrlChecksController;
 import hexlet.code.controller.UrlsController;
+import hexlet.code.dto.ErrorPage;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
@@ -29,6 +30,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static io.javalin.rendering.template.TemplateUtil.model;
+
 @Slf4j
 public class App {
     private record ErrorResponse(String error, String message) { };
@@ -54,25 +57,32 @@ public class App {
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
-        app.exception(Exception.class, (e, ctx) -> {
-            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
-            ctx.json(new ErrorResponse("Internal server error", e.getMessage()));
-        });
+//        app.exception(Exception.class, (e, ctx) -> {
+//            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+//            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), "Internal server error");
+//            ctx.render("error.jte", model("page", page));
+//            log.error("Internal server error: ", e);
+//        });
 
-        // Обработчик для конкретных исключений
         app.exception(IllegalArgumentException.class, (e, ctx) -> {
             ctx.status(HttpStatus.BAD_REQUEST);
-            ctx.json(new ErrorResponse("Bad request", e.getMessage()));
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.BAD_REQUEST), "Bad request");
+            ctx.render("error.jte", model("page", page));
+            log.error("Bad request: ", e);
         });
 
         app.exception(NotFoundResponse.class, (e, ctx) -> {
             ctx.status(HttpStatus.NOT_FOUND);
-            ctx.json(new ErrorResponse("Not found", e.getMessage()));
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.NOT_FOUND), "Not found");
+            ctx.render("error.jte", model("page", page));
+            log.error("Not found: ", e);
         });
 
         app.exception(SQLException.class, (e, ctx) -> {
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
-            ctx.json(new ErrorResponse("Database error", e.getMessage()));
+            ErrorPage page = new ErrorPage(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR), "Database error");
+            ctx.render("error.jte", model("page", page));
+            log.error("Database error: ", e);
         });
 
         app.get(NamedRoutes.rootPath(), RootController::root);
