@@ -2,7 +2,7 @@ install:
 	make -C app install
 
 run-dist:
-	make -C app install
+	make -C app run-dist
 
 clean:
 	make -C app clean
@@ -26,6 +26,6 @@ coverage:
 	make -C app coverage
 
 update-check:
-	make -C app uodate-check
+	make -C app update-check
 
 .PHONY: build

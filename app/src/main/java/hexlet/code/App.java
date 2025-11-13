@@ -1,31 +1,25 @@
 package hexlet.code;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controller.RootController;
-import hexlet.code.controller.urls.UrlChecksController;
 import hexlet.code.controller.UrlsController;
+import hexlet.code.controller.urls.UrlChecksController;
 import hexlet.code.dto.ErrorPage;
+import hexlet.code.repository.BaseRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
-import gg.jte.ContentType;
-import gg.jte.TemplateEngine;
-import gg.jte.resolve.ResourceCodeResolver;
-
-import hexlet.code.repository.BaseRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -124,14 +118,14 @@ public class App {
         return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 
-    public static String readResourceFile(String fileName) throws IOException, URISyntaxException {
-        URL resourceUrl = App.class.getResource("/" + fileName);
-
-        if (resourceUrl == null) {
-            throw new IOException("Resource not found: " + fileName);
+    public static String readResourceFile(String fileName) throws IOException {
+        ClassLoader classLoader = App.class.getClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + fileName);
+            }
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
-
-        return Files.readString(Path.of(resourceUrl.toURI()), StandardCharsets.UTF_8);
     }
 
     public static void initializeDatabase(HikariDataSource dataSource) throws SQLException, IOException {
@@ -142,8 +136,8 @@ public class App {
             statement.execute(sql);
 
             log.info("Database initialized");
-        } catch (URISyntaxException e) {
-            log.error("Failed to read schema.sql due to invalid URI: {}", e.getMessage(), e);
+        } catch (IOException e) {
+            log.error("Failed to read schema.sql: {}", e.getMessage(), e);
         }
     }
 
